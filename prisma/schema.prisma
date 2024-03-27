@@ -11,17 +11,78 @@ datasource db {
 }
 
 model Usuario {
-  id  String @id @default(uuid())
-  nome  String
-  email   String @unique
-  nivel   String
-  situacao  String
-  login   String @unique
-  senha   String
-  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt   DateTime?
+  id         String      @id @default(uuid())
+  nome       String
+  email      String      @unique
+  nivel      String
+  situacao   String
+  login      String      @unique
+  senha      String
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
+  deletedAt  DateTime?
+  Alunos     Aluno[]
+  Fichas     Ficha[]
+  Categorias Categoria[]
 
+  @@map("usuarios")
+}
 
-  @@map("usuarios")//Nome da tabela
+model Aluno {
+  id               String   @id @default(uuid())
+  nome             String
+  email            String?
+  login            String   @unique
+  situacao         String
+  idade            Int
+  peso             Float
+  altura           Float
+  id_usuario       String?
+  data_criacao     DateTime
+  data_atualizacao DateTime
+  data_exclusao    DateTime
+  Usuarios         Usuario? @relation(fields: [id_usuario], references: [id])
+}
+
+model Exercicio {
+  id                  String                @id @default(uuid())
+  nome                String
+  gifUrl              String
+  descricao           String
+  Categoria_Exercicio Categoria_Exercicio[]
+}
+
+model Ficha {
+  id               String      @id @default(uuid())
+  nome             String
+  id_usuario       String
+  data_criacao     DateTime
+  data_atualizacao DateTime
+  data_exclusao    DateTime
+  Usuarios         Usuario?    @relation(fields: [id_usuario], references: [id])
+  Categoria        Categoria[]
+}
+
+model Categoria {
+  id                  String                @id @default(uuid())
+  nome                String
+  id_ficha            String
+  data_criacao        DateTime
+  data_atualizacao    DateTime
+  id_usuario          String?
+  Categoria_Exercicio Categoria_Exercicio[]
+  data_exclusao       DateTime
+  Ficha               Ficha                 @relation(fields: [id_ficha], references: [id])
+  Usuario             Usuario?              @relation(fields: [id_usuario], references: [id])
+}
+
+model Categoria_Exercicio {
+  id_categoria String
+  id_exercicio String
+  series       Int
+  repeticoes   Int
+  Categoria    Categoria @relation(fields: [id_categoria], references: [id])
+  Exercicio    Exercicio @relation(fields: [id_exercicio], references: [id])
+
+  @@id([id_categoria, id_exercicio])
 }
