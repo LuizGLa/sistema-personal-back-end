@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  rel-ponto-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_NAME
+      - HTTP_PORT
+    volumes:
+      - ./:/app/
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    command: npm run start
+    networks:
+      - srvweb-network
+
+networks:
+  srvweb-network:
+    driver: bridge

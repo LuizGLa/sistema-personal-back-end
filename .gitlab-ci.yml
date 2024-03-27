@@ -1,0 +1,22 @@
+stages:
+  - test
+
+variables:
+  DOCKER_STAGE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+# ------
+#  JOBS
+# ------
+
+lint:
+  stage: test
+  script:
+    - echo "$CI_JOB_STAGE"
+    - echo "$CI_REGISTRY_IMAGE"
+    - echo "$CI_COMMIT_REF_NAME"
+    - echo "$CI_REGISTRY_USER"
+    - echo "$CI_REGISTRY_PASSWORD"
+    - echo "$CI_REGISTRY"
+    - echo "$DOCKER_STAGE_IMAGE"
+    - echo "$CI_PROJECT_NAME"
+    - echo "$CI_PROJECT_NAMESPACE"
