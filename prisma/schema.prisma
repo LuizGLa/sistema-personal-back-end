@@ -47,7 +47,7 @@ model Aluno {
 model Exercicio {
   id                  String                @id @default(uuid())
   nome                String
-  gifUrl              String
+  gifUrl              String?               @db.VarChar()
   descricao           String
   Categoria_Exercicio Categoria_Exercicio[]
 }
