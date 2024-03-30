@@ -6,8 +6,11 @@ import {
   UseGuards,
   Param,
   Delete,
-  Put,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  Patch,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AtualizaExercicioDto } from './dto/atualiza-exercicio.dto';
@@ -15,44 +18,76 @@ import { CriaExercicioDto } from './dto/cria-exercicio.dto';
 import { ExercicioService } from './exercicio.service';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from '../auth/roles/roles.decorator';
+import { Role } from '../usuarios/enum/usuario-roles.enum';
 
 @ApiBearerAuth()
-@Controller('exercicio')
+@Controller('exercicios')
 @ApiTags('Exercicios')
 export class ExercicioController {
   constructor(private readonly exercicioService: ExercicioService) { }
 
   @Post()
+  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
-  async cria(@Body() dados: CriaExercicioDto): Promise<any> {
-    return this.exercicioService.cria(dados);
+  @UseInterceptors(FileInterceptor('gifUrl'))
+  cria(
+    @Body() dados: CriaExercicioDto,
+    @UploadedFile() gifUrl: Express.Multer.File
+  ): Promise<any> {
+    return this.exercicioService.cria(dados, gifUrl);
   }
 
   @Get()
+  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
-  async buscaTodos(
+  findAll(
     @Query('pagina') pagina: number,
     @Query('itensPorPagina') itensPorPagina: number,
     @Query('busca') busca?: string,
+    @Query('filtro') filtro?: string,
+    @Query('valor') valor?: string,
   ) {
-    return this.exercicioService.buscaTodos(pagina, itensPorPagina, busca);
+    return this.exercicioService.findAll(
+      pagina,
+      itensPorPagina,
+      busca,
+      filtro?.split(','),
+      valor?.split(','),
+    );
   }
 
-  @Get('/:id')
-  @UseGuards(AuthGuard())
-  async buscaPorId(@Param('id') id: string): Promise<any> {
-    return this.exercicioService.buscaPorId(id);
-  }
 
-  @Put('/:id')
-  @UseGuards(AuthGuard())
-  async atualiza(@Param('id') id: string, @Body() data: AtualizaExercicioDto) {
-    return this.exercicioService.atualiza(id, data);
-  }
-
-  @Delete('/:id')
+  @Get(':id')
+  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
-  async deleta(@Param('id') id: string) {
-    return this.exercicioService.deleta(id);
+  findOne(@Param('id') id: string) {
+    return this.exercicioService.findOne(id);
   }
+
+  @Patch(':id')
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
+  @UseInterceptors(FileInterceptor('gifURL'))
+  update(
+    @Param('id') id: string,
+    @UploadedFile() gifUrl: Express.Multer.File,
+    @Body() updateExercicioDto: AtualizaExercicioDto,
+  ) {
+    return this.exercicioService.update(
+      id,
+      updateExercicioDto,
+      gifUrl,
+    );
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
+  remove(@Param('id') id: string) {
+    return this.exercicioService.remove(id);
+  }
+
 }

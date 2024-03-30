@@ -39,17 +39,17 @@ export class CriaAlunoDto {
   @ApiProperty()
   @IsOptional()
   @IsNumber()
-  idade: number;
+  idade?: number;
 
   @ApiProperty()
   @IsOptional()
   @IsNumber()
-  peso: number;
+  peso?: number;
 
   @ApiProperty()
   @IsOptional()
   @IsNumber()
-  altura: number;
+  altura?: number;
 
   @ApiProperty()
   @IsNotEmpty({

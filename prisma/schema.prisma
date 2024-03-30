@@ -32,11 +32,12 @@ model Aluno {
   id         String    @id @default(uuid())
   nome       String
   email      String?
+  senha      String
   login      String    @unique
   situacao   String
-  idade      Int
-  peso       Float
-  altura     Float
+  idade      Int?
+  peso       Float?
+  altura     Float?
   id_usuario String?
   createdAt  DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
