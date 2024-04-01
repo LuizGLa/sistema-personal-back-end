@@ -1,18 +1,16 @@
-export type ExerciciosTypesToPagination = {
+export type FichasTypesToPagination = {
   id: string;
   nome: string;
-  descricao: string;
-  gifUrl?: string;
+  id_usuario: string;
 }
 
-export type ExercicicosTypes = {
+export type FichasTypes = {
   id: string;
   nome: string;
-  descricao: string;
-  gifUrl?: string;
+  id_usuario: string;
 }
 
-export type PaginateExercicios = {
-  data: ExerciciosTypesToPagination[];
+export type PaginateFichas = {
+  data: FichasTypesToPagination[];
   maxPag: number;
 }

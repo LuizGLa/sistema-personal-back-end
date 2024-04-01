@@ -8,35 +8,33 @@ import {
   Delete,
   Query,
   UseInterceptors,
-  UploadedFile,
   Patch,
   HttpCode,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AtualizaExercicioDto } from './dto/atualiza-ficha.dto';
-import { CriaExercicioDto } from './dto/cria-ficha.dto';
-import { ExercicioService } from './ficha.service';
+import { AtualizaFichaDto } from './dto/atualiza-ficha.dto';
+import { CriaFichaDto } from './dto/cria-ficha.dto';
+import { FichaService } from './ficha.service';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../auth/roles/roles.decorator';
 import { Role } from '../usuarios/enum/usuario-roles.enum';
+import { CriaExercicioDto } from '../exercicios/dto/cria-exercicio.dto';
 
 @ApiBearerAuth()
-@Controller('exercicios')
-@ApiTags('Exercicios')
-export class ExercicioController {
-  constructor(private readonly exercicioService: ExercicioService) { }
+@Controller('fichas')
+@ApiTags('fichas')
+export class FichaController {
+  constructor(private readonly fichaService: FichaService) { }
 
   @Post()
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
-  @UseInterceptors(FileInterceptor('gifUrl'))
   cria(
-    @Body() dados: CriaExercicioDto,
-    @UploadedFile() gifUrl: Express.Multer.File
+    @Body() dados: CriaFichaDto,
   ): Promise<any> {
-    return this.exercicioService.cria(dados, gifUrl);
+    return this.fichaService.cria(dados);
   }
 
   @Get()
@@ -49,7 +47,7 @@ export class ExercicioController {
     @Query('filtro') filtro?: string,
     @Query('valor') valor?: string,
   ) {
-    return this.exercicioService.findAll(
+    return this.fichaService.findAll(
       pagina,
       itensPorPagina,
       busca,
@@ -63,7 +61,7 @@ export class ExercicioController {
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
   findOne(@Param('id') id: string) {
-    return this.exercicioService.findOne(id);
+    return this.fichaService.findOne(id);
   }
 
   @Patch(':id')
@@ -72,13 +70,11 @@ export class ExercicioController {
   @UseInterceptors(FileInterceptor('gifURL'))
   update(
     @Param('id') id: string,
-    @UploadedFile() gifUrl: Express.Multer.File,
-    @Body() updateExercicioDto: AtualizaExercicioDto,
+    @Body() updateFichaDto: AtualizaFichaDto,
   ) {
-    return this.exercicioService.update(
+    return this.fichaService.update(
       id,
-      updateExercicioDto,
-      gifUrl,
+      updateFichaDto,
     );
   }
 
@@ -87,7 +83,7 @@ export class ExercicioController {
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
   remove(@Param('id') id: string) {
-    return this.exercicioService.remove(id);
+    return this.fichaService.remove(id);
   }
 
 }

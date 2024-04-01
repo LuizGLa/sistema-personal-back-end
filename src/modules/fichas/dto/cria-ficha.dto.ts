@@ -1,11 +1,10 @@
 import {
   IsNotEmpty,
   IsString,
-  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CriaExercicioDto {
+export class CriaFichaDto {
   @ApiProperty()
   @IsNotEmpty({
     message: 'Informe o Nome',
@@ -14,13 +13,8 @@ export class CriaExercicioDto {
   nome: string;
 
   @ApiProperty()
-  @IsOptional()
-  gifUrl?: any;
-
-  @ApiProperty()
   @IsNotEmpty({
-    message: 'Informe a Descrição',
+    message: 'Informe o ID do Usuário',
   })
-  @IsString()
-  descricao: string;
+  id_usuario: string;
 }

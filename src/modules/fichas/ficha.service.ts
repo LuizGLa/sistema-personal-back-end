@@ -6,64 +6,40 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Exercicio } from '@prisma/client';
-import { CriaExercicioDto } from './dto/cria-ficha.dto';
-import { AtualizaExercicioDto } from './dto/atualiza-ficha.dto';
+import { Ficha } from '@prisma/client';
+import { CriaFichaDto } from './dto/cria-ficha.dto';
+import { AtualizaFichaDto } from './dto/atualiza-ficha.dto';
 import { PrismaService } from '../../plugins/database/services/prisma.service';
 import { PaginateService } from 'src/utils/paginate/paginate.service';
 import { existsSync } from 'fs';
 import { unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { Response } from 'express';
-import { PaginateExercicios } from './types/ficha.type';
+import { PaginateFichas } from './types/ficha.type';
 
 
 @Injectable()
-export class ExercicioService {
+export class FichaService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly paginateService: PaginateService,
     private readonly configService: ConfigService,
   ) { }
 
-  async cria(criaExercicioDto: CriaExercicioDto, gifUrl: Express.Multer.File): Promise<any> {
-    this._validateFileSize(gifUrl);
-    this._validateFileExtension(gifUrl);
-
-    const nomeDoArquivo = this._generateUniqueFilename(gifUrl);
-
-    await writeFile(
-      join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        `${process.env.FILE_PATH}/${nomeDoArquivo}`
-      ),
-      gifUrl.buffer
-    );
-    const path = `${this.configService.get<string>('FILE_URL')}${nomeDoArquivo}`;
+  async cria(criaFichaDto: CriaFichaDto): Promise<any> {
     try {
-      const exercicio = await this.prismaService.exercicio.create({
+      const ficha = await this.prismaService.ficha.create({
         data: {
-          gifUrl: path,
-          ...criaExercicioDto,
+          ...criaFichaDto,
         },
       });
-      return exercicio;
+      return ficha;
     } catch (error) {
-      await unlink(
-        join(
-          __dirname,
-          '..',
-          '..',
-          'uploads',
-          `${process.env.FILE_PATH}/${nomeDoArquivo}`
-        )
-      )
+      throw new InternalServerErrorException(
+        `Erro ao criar ficha. ${error.message}`,
+      );
     }
   }
-
 
   async findAll(
     pagina: number,
@@ -71,7 +47,7 @@ export class ExercicioService {
     busca: string,
     filtro?: string[],
     valor?: string[],
-  ): Promise<PaginateExercicios | Exercicio[]> {
+  ): Promise<PaginateFichas | Ficha[]> {
     try {
       const querys = {};
 
@@ -88,7 +64,7 @@ export class ExercicioService {
 
       if (pagina && itensPorPagina && querys) {
         return this.paginateService.paginate({
-          module: 'exercicio',
+          module: 'ficha',
           busca,
           pagina,
           itensPorPagina,
@@ -98,98 +74,57 @@ export class ExercicioService {
           },
         });
       } else {
-        return await this.prismaService.exercicio.findMany({
+        return await this.prismaService.ficha.findMany({
         });
       }
     } catch (error) {
       throw new InternalServerErrorException(
-        `Erro ao listar exercicios. ${error.message}`,
+        `Erro ao listar fichas. ${error.message}`,
       );
     }
   }
 
   async findOne(id: string) {
-    const exercicio = await this.prismaService.exercicio.findUnique({
+    const ficha = await this.prismaService.ficha.findUnique({
       where: { id },
     });
 
-    if (!exercicio) {
-      throw new NotFoundException('Motorista não encontrado na base de dados.');
+    if (!ficha) {
+      throw new NotFoundException('Ficha não encontrado na base de dados.');
     }
 
-    return exercicio;
+    return ficha;
   }
 
-  private async _get(id: string): Promise<CriaExercicioDto> {
-    const exercicio = await this.prismaService.exercicio.findUnique({
+  private async _get(id: string): Promise<CriaFichaDto> {
+    const ficha = await this.prismaService.ficha.findUnique({
       where: {
         id,
       },
     });
 
-    if (!exercicio) {
+    if (!ficha) {
       throw new NotFoundException('Motorista não encontrado na base de dados.');
     }
 
-    return exercicio;
-  }
-
-
-
-
-  retornaGifExercicio(gif: string, response: Response): void {
-    const gifPath = `./uploads/${process.env.FILE_PATH}`;
-
-    if (!existsSync(gifPath)) {
-      throw new NotFoundException(`Imagem não encontrada.`);
-    }
-
-    response.sendFile(gif, { root: gifPath });
+    return ficha;
   }
 
 
 
   async update(
     id: string,
-    atualizaExercicioDto: AtualizaExercicioDto,
-    gifUrl: Express.Multer.File,
+    atualizaFichaDto: AtualizaFichaDto,
   ) {
-    const exercicio = await this._get(id);
-
-    if (gifUrl) {
-      this._validateFileSize(gifUrl);
-      this._validateFileExtension(gifUrl);
-      const nomeDoArquivo = this._generateUniqueFilename(gifUrl);
-
-      await this._removeGifExercicio(exercicio);
-
-      await writeFile(
-        join(
-          __dirname,
-          '..',
-          '..',
-          '..',
-          '..',
-          'uploads',
-          `${process.env.FILE_PATH}/${nomeDoArquivo}`,
-        ),
-        gifUrl.buffer,
-      );
-
-      atualizaExercicioDto.gifUrl = `${this.configService.get<string>(
-        'FILE_URL',
-      )}${nomeDoArquivo}`;
-    }
-
     try {
-      const motorista = await this.prismaService.exercicio.update({
+      const ficha = await this.prismaService.ficha.update({
         where: {
           id,
         },
-        data: atualizaExercicioDto,
+        data: atualizaFichaDto,
       });
 
-      return motorista;
+      return ficha;
     } catch (error) {
       throw new InternalServerErrorException('Erro ao atualizar motorista.');
     }
@@ -197,50 +132,24 @@ export class ExercicioService {
 
 
   async remove(id: string): Promise<void> {
-    const exercicio = await this._get(id);
-    await this._removeGifExercicio(exercicio);
-  }
-
-
-
-  private async _removeGifExercicio(exercicio: CriaExercicioDto): Promise<void> {
-    const gifUrl = exercicio.gifUrl
-    const nomeDoArquivo = gifUrl.split("/").pop();
-    await unlink(
-      join(
-        __dirname,
-        '..', '..', '..', '..',
-        'uploads',
-        `${process.env.FILE_PATH}/${nomeDoArquivo}`
-      )
-    );
-  }
-
-
-  private _generateUniqueFilename(gifUrl: Express.Multer.File) {
-    const randomName = Date.now() + Math.round(Math.random() * 1e9);
-    return `exercicio-${randomName}${extname(gifUrl.originalname)}`;
-  }
-
-  private _validateFileExtension(gifUrl: Express.Multer.File) {
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-
-    if (!allowedExtensions.includes(extname(gifUrl.originalname))) {
-      throw new BadRequestException('Extensão de arquivo inválida!');
-    }
-  }
-
-
-
-  private _validateFileSize(gifUrl: Express.Multer.File) {
     try {
-      const maxSize = 1024 * 1024 * this.configService.get<number>('MAX_FILE_SIZE');
+      const ficha = await this.prismaService.ficha.findUnique({
+        where: {
+          id,
+        },
+      });
 
-      if (gifUrl.size > maxSize) {
-        throw new ForbiddenException(`Tamanho máximo do gif (${this.configService.get<number>('MAX_FILE_SIZE')}MB) excedido!`);
+      if (!ficha) {
+        throw new NotFoundException('Ficha não encontrado na base de dados.');
       }
+
+      await this.prismaService.ficha.delete({
+        where: {
+          id,
+        },
+      });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new InternalServerErrorException('Erro ao deletar ficha.');
     }
   }
 }

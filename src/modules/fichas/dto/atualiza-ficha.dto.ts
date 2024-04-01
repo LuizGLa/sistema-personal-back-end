@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AtualizaExercicioDto {
+export class AtualizaFichaDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -9,10 +9,5 @@ export class AtualizaExercicioDto {
 
   @ApiProperty()
   @IsOptional()
-  gifUrl?: any;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  descricao?: string;
+  id_usuario?: string;
 }
