@@ -35,8 +35,7 @@ export class ExercicioService {
     await writeFile(
       join(
         __dirname,
-        '..',
-        '..',
+        '..', '..', '..', '..',
         'uploads',
         `${process.env.FILE_PATH}/${nomeDoArquivo}`
       ),
@@ -55,8 +54,7 @@ export class ExercicioService {
       await unlink(
         join(
           __dirname,
-          '..',
-          '..',
+          '..', '..', '..', '..',
           'uploads',
           `${process.env.FILE_PATH}/${nomeDoArquivo}`
         )
