@@ -78,12 +78,14 @@ model Categoria {
 }
 
 model Categoria_Exercicio {
+  id           String    @id @default(uuid())
   id_categoria String
   id_exercicio String
   series       Int
   repeticoes   Int
   Categoria    Categoria @relation(fields: [id_categoria], references: [id])
   Exercicio    Exercicio @relation(fields: [id_exercicio], references: [id])
-
-  @@id([id_categoria, id_exercicio])
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt    DateTime?
 }
