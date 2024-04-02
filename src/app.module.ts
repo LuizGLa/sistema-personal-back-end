@@ -5,6 +5,7 @@ import * as ConfigEnv from '@nestjs/config';
 import { AlunoModule } from './modules/alunos/aluno.module';
 import { ExercicioModule } from './modules/exercicios/exercicio.module';
 import { FichaModule } from './modules/fichas/ficha.module';
+import { CategoriaModule } from './modules/categorias/categoria.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { FichaModule } from './modules/fichas/ficha.module';
     UsuarioModule,
     AlunoModule,
     ExercicioModule,
-    FichaModule
+    FichaModule,
+    CategoriaModule
   ],
   controllers: [],
   providers: [],

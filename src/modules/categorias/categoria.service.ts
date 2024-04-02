@@ -4,33 +4,33 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Ficha } from '@prisma/client';
-import { CriaFichaDto } from './dto/cria-ficha.dto';
-import { AtualizaFichaDto } from './dto/atualiza-ficha.dto';
+import { Categoria } from '@prisma/client';
+import { CriaCategoriaDto } from './dto/cria-categoria.dto';
+import { AtualizaCategoriaDto } from './dto/atualiza-categoria.dto';
 import { PrismaService } from '../../plugins/database/services/prisma.service';
 import { PaginateService } from 'src/utils/paginate/paginate.service';
-import { PaginateFichas } from './types/ficha.type';
+import { PaginateFichas } from './types/categoria.type';
 
 
 @Injectable()
-export class FichaService {
+export class CategoriaService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly paginateService: PaginateService,
     private readonly configService: ConfigService,
   ) { }
 
-  async cria(criaFichaDto: CriaFichaDto): Promise<any> {
+  async cria(criaCategoriaDto: CriaCategoriaDto): Promise<any> {
     try {
-      const ficha = await this.prismaService.ficha.create({
+      const categoria = await this.prismaService.categoria.create({
         data: {
-          ...criaFichaDto,
+          ...criaCategoriaDto,
         },
       });
-      return ficha;
+      return categoria;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Erro ao criar ficha. ${error.message}`,
+        `Erro ao criar categoria. ${error.message}`,
       );
     }
   }
@@ -41,7 +41,7 @@ export class FichaService {
     busca: string,
     filtro?: string[],
     valor?: string[],
-  ): Promise<PaginateFichas | Ficha[]> {
+  ): Promise<PaginateFichas | Categoria[]> {
     try {
       const querys = {};
 
@@ -58,7 +58,7 @@ export class FichaService {
 
       if (pagina && itensPorPagina && querys) {
         return this.paginateService.paginate({
-          module: 'ficha',
+          module: 'categoria',
           busca,
           pagina,
           itensPorPagina,
@@ -68,76 +68,76 @@ export class FichaService {
           },
         });
       } else {
-        return await this.prismaService.ficha.findMany({
+        return await this.prismaService.categoria.findMany({
         });
       }
     } catch (error) {
       throw new InternalServerErrorException(
-        `Erro ao listar fichas. ${error.message}`,
+        `Erro ao listar categorias. ${error.message}`,
       );
     }
   }
 
   async findOne(id: string) {
-    const ficha = await this.prismaService.ficha.findUnique({
+    const categoria = await this.prismaService.categoria.findUnique({
       where: { id },
     });
 
-    if (!ficha) {
-      throw new NotFoundException('Ficha não encontrado na base de dados.');
+    if (!categoria) {
+      throw new NotFoundException('Categoria não encontrado na base de dados.');
     }
 
-    return ficha;
+    return categoria;
   }
 
-  private async _get(id: string): Promise<CriaFichaDto> {
-    const ficha = await this.prismaService.ficha.findUnique({
+  private async _get(id: string): Promise<CriaCategoriaDto> {
+    const categoria = await this.prismaService.categoria.findUnique({
       where: {
         id,
       },
     });
 
-    if (!ficha) {
+    if (!categoria) {
       throw new NotFoundException('Motorista não encontrado na base de dados.');
     }
 
-    return ficha;
+    return categoria;
   }
 
 
 
   async update(
     id: string,
-    atualizaFichaDto: AtualizaFichaDto,
+    atualizaCategoriaDto: AtualizaCategoriaDto,
   ) {
     try {
-      const ficha = await this.prismaService.ficha.update({
+      const categoria = await this.prismaService.categoria.update({
         where: {
           id,
         },
-        data: atualizaFichaDto,
+        data: atualizaCategoriaDto,
       });
 
-      return ficha;
+      return categoria;
     } catch (error) {
-      throw new InternalServerErrorException('Erro ao atualizar motorista.');
+      throw new InternalServerErrorException('Erro ao atualizar categoria.');
     }
   }
 
 
   async remove(id: string): Promise<void> {
     try {
-      const ficha = await this.prismaService.ficha.findUnique({
+      const categoria = await this.prismaService.categoria.findUnique({
         where: {
           id,
         },
       });
 
-      if (!ficha) {
-        throw new NotFoundException('Ficha não encontrado na base de dados.');
+      if (!categoria) {
+        throw new NotFoundException('Categoria não encontrado na base de dados.');
       }
 
-      await this.prismaService.ficha.delete({
+      await this.prismaService.categoria.delete({
         where: {
           id,
         },

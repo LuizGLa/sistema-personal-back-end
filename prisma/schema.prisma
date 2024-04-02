@@ -68,11 +68,11 @@ model Categoria {
   id                  String                @id @default(uuid())
   nome                String
   id_ficha            String
-  data_criacao        DateTime
-  data_atualizacao    DateTime
   id_usuario          String?
   Categoria_Exercicio Categoria_Exercicio[]
-  data_exclusao       DateTime
+  createdAt           DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime              @updatedAt @db.Timestamptz(3)
+  deletedAt           DateTime?
   Ficha               Ficha                 @relation(fields: [id_ficha], references: [id])
   Usuario             Usuario?              @relation(fields: [id_usuario], references: [id])
 }

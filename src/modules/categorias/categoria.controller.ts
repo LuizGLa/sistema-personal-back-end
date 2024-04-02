@@ -7,32 +7,31 @@ import {
   Param,
   Delete,
   Query,
-  UseInterceptors,
   Patch,
   HttpCode,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AtualizaFichaDto } from './dto/atualiza-ficha.dto';
-import { CriaFichaDto } from './dto/cria-ficha.dto';
-import { FichaService } from './ficha.service';
+import { AtualizaCategoriaDto } from './dto/atualiza-categoria.dto';
+import { CriaCategoriaDto } from './dto/cria-categoria.dto';
+import { CategoriaService } from './categoria.service';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles/roles.decorator';
 import { Role } from '../usuarios/enum/usuario-roles.enum';
 
 @ApiBearerAuth()
-@Controller('fichas')
-@ApiTags('fichas')
-export class FichaController {
-  constructor(private readonly fichaService: FichaService) { }
+@Controller('categorias')
+@ApiTags('categorias')
+export class CategoriaController {
+  constructor(private readonly categoriaService: CategoriaService) { }
 
   @Post()
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
   cria(
-    @Body() dados: CriaFichaDto,
+    @Body() dados: CriaCategoriaDto,
   ): Promise<any> {
-    return this.fichaService.cria(dados);
+    return this.categoriaService.cria(dados);
   }
 
   @Get()
@@ -45,7 +44,7 @@ export class FichaController {
     @Query('filtro') filtro?: string,
     @Query('valor') valor?: string,
   ) {
-    return this.fichaService.findAll(
+    return this.categoriaService.findAll(
       pagina,
       itensPorPagina,
       busca,
@@ -59,7 +58,7 @@ export class FichaController {
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
   findOne(@Param('id') id: string) {
-    return this.fichaService.findOne(id);
+    return this.categoriaService.findOne(id);
   }
 
   @Patch(':id')
@@ -67,11 +66,11 @@ export class FichaController {
   @UseGuards(AuthGuard(), RolesGuard)
   update(
     @Param('id') id: string,
-    @Body() updateFichaDto: AtualizaFichaDto,
+    @Body() updateCategoriaDto: AtualizaCategoriaDto,
   ) {
-    return this.fichaService.update(
+    return this.categoriaService.update(
       id,
-      updateFichaDto,
+      updateCategoriaDto,
     );
   }
 
@@ -80,7 +79,7 @@ export class FichaController {
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard(), RolesGuard)
   remove(@Param('id') id: string) {
-    return this.fichaService.remove(id);
+    return this.categoriaService.remove(id);
   }
 
 }
