@@ -11,9 +11,11 @@ import {
   UploadedFile,
   Patch,
   HttpCode,
+  Res,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AtualizaExercicioDto } from './dto/atualiza-exercicio.dto';
+import { Response } from 'express';
 import { CriaExercicioDto } from './dto/cria-exercicio.dto';
 import { ExercicioService } from './exercicio.service';
 import { RolesGuard } from '../auth/guard/roles.guard';
@@ -56,6 +58,11 @@ export class ExercicioController {
       filtro?.split(','),
       valor?.split(','),
     );
+  }
+
+  @Get('gif/:filename')
+  async retornaFotoMotorista(@Param('filename') filename: string, @Res() res: Response) {
+    return this.exercicioService.retornaGifExercicio(filename, res);
   }
 
 

@@ -37,15 +37,14 @@ export class ExercicioService {
         __dirname,
         '..', '..', '..', '..',
         'uploads',
-        `${process.env.FILE_PATH}/${nomeDoArquivo}`
+        `${process.env.FILE_PATH}/${nomeDoArquivo}`,
       ),
       gifUrl.buffer
     );
-    const path = `${this.configService.get<string>('FILE_URL')}${nomeDoArquivo}`;
+    criaExercicioDto.gifUrl = `${this.configService.get<string>('FILE_URL')}${nomeDoArquivo}`;
     try {
       const exercicio = await this.prismaService.exercicio.create({
         data: {
-          gifUrl: path,
           ...criaExercicioDto,
         },
       });
@@ -131,9 +130,6 @@ export class ExercicioService {
 
     return exercicio;
   }
-
-
-
 
   retornaGifExercicio(gif: string, response: Response): void {
     const gifPath = `./uploads/${process.env.FILE_PATH}`;
