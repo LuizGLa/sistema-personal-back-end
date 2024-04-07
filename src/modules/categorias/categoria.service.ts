@@ -64,7 +64,7 @@ export class CategoriaService {
           itensPorPagina,
           querys,
           orderBy: {
-            data_atualizacao: 'desc',
+            updatedAt: 'desc',
           },
         });
       } else {

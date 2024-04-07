@@ -92,7 +92,7 @@ export class ExercicioService {
           itensPorPagina,
           querys,
           orderBy: {
-            data_atualizacao: 'desc',
+            updatedAt: 'desc',
           },
         });
       } else {
