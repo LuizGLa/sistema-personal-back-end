@@ -191,7 +191,11 @@ export class ExercicioService {
 
 
   async remove(id: string): Promise<void> {
-    const exercicio = await this._get(id);
+    const exercicio = await this.prismaService.exercicio.delete({
+      where: {
+        id,
+      },
+    });
     await this._removeGifExercicio(exercicio);
   }
 
