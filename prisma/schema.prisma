@@ -45,6 +45,16 @@ model Aluno {
   Usuarios   Usuario?  @relation(fields: [id_usuario], references: [id])
 }
 
+model CombinacaoExercicio {
+  id         String      @id @default(uuid())
+  nome       String
+  descricao  String?
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
+  deletedAt  DateTime?
+  Exercicios Exercicio[]
+}
+
 model Exercicio {
   id                  String                @id @default(uuid())
   nome                String
@@ -54,6 +64,7 @@ model Exercicio {
   updatedAt           DateTime              @updatedAt @db.Timestamptz(3)
   deletedAt           DateTime?
   Categoria_Exercicio Categoria_Exercicio[]
+  Combinacoes         CombinacaoExercicio[]
 }
 
 model Ficha {
