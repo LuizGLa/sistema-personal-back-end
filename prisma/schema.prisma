@@ -1,6 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -45,16 +44,6 @@ model Aluno {
   Usuarios   Usuario?  @relation(fields: [id_usuario], references: [id])
 }
 
-model CombinacaoExercicio {
-  id         String      @id @default(uuid())
-  nome       String
-  descricao  String?
-  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime    @updatedAt @db.Timestamptz(3)
-  deletedAt  DateTime?
-  Exercicios Exercicio[]
-}
-
 model Exercicio {
   id                  String                @id @default(uuid())
   nome                String
@@ -64,7 +53,6 @@ model Exercicio {
   updatedAt           DateTime              @updatedAt @db.Timestamptz(3)
   deletedAt           DateTime?
   Categoria_Exercicio Categoria_Exercicio[]
-  Combinacoes         CombinacaoExercicio[]
 }
 
 model Ficha {
@@ -92,14 +80,17 @@ model Categoria {
 }
 
 model Categoria_Exercicio {
-  id           String    @id @default(uuid())
-  id_categoria String
-  id_exercicio String
-  series       Int
-  repeticoes   Int
-  Categoria    Categoria @relation(fields: [id_categoria], references: [id])
-  Exercicio    Exercicio @relation(fields: [id_exercicio], references: [id])
-  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt    DateTime?
+  id              String                @id @default(uuid())
+  id_categoria    String
+  id_exercicio    String
+  id_conjugado    String
+  series          Int
+  repeticoes      Int
+  conjugado       Categoria_Exercicio?  @relation("Conjugado", fields: [id_conjugado], references: [id])
+  conjugado_filho Categoria_Exercicio[] @relation("Conjugado")
+  Categoria       Categoria             @relation(fields: [id_categoria], references: [id])
+  Exercicio       Exercicio             @relation(fields: [id_exercicio], references: [id])
+  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime              @updatedAt @db.Timestamptz(3)
+  deletedAt       DateTime?
 }
